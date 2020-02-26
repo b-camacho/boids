@@ -4,58 +4,69 @@ import org.scalajs.dom.raw.CanvasRenderingContext2D
 import org.scalajs.dom.window
 import scala.util.Random
 
-class Animation(ctx: CanvasRenderingContext2D) {
-  var boids = IndexedSeq[Boid]()
+class Animation(ctx: CanvasRenderingContext2D,
+  runUntil: Double,
+  numBoids: Int) {
+  var boids = List[Boid]()
   var prevTime = 0.0
-  def setup() = {
-    //boids = IndexedSeq[Boid](
-    //  Boid(20, Vec2(100, 100), Vec2(0.1, 0)),
-    //  Boid(20, Vec2(200, 120), Vec2(-0.1, 0))
-    //)
+  var frameCnt = 0
+  var startTime = 0.0
 
-    boids = (1 to 30)
+  def setup(time: Double) = {
+    boids = (1 to numBoids)
       .map(i => {
         val b = Boid(20)
         b.p = Vec2(
-          Random.nextDouble() * 500,
-          Random.nextDouble() * 500
+          Random.nextDouble() * ctx.canvas.height,
+          Random.nextDouble() * ctx.canvas.width,
         )
         b.v = Vec2(
           (Random.nextDouble() - 0.5) * 0.05,
           (Random.nextDouble() - 0.5) * 0.05
         )
         b
-      })
+      }).toList
+      startTime = time
+      prevTime = time
   }
 
+  def oneVsRest[A](left:List[A], right: List[A]): List[(A, Iterable[A])] = {
+    right match {
+      case Nil => Nil
+      case x :: xs => (x, Iterable.concat(left, xs)) :: oneVsRest(x :: left, xs)
+    }
+  }
   def loop(time: Double): Unit = {
-    println(boids.map(b => (b.p, b.v)))
+    //println(boids.map(b => (b.p, b.v)))
     val elapsed = time - prevTime
     ctx.canvas.width = ctx.canvas.width
     for (b <- boids) {
       b.render(ctx)
     }
-    var left = IndexedSeq[Boid]()
-    var right = boids.tail
-    var newBoids = IndexedSeq[Boid]()
-    boids = boids
-      .map(b => b.step(elapsed, boids.diff(IndexedSeq(b))))
-      .map(b => torusPlane(ctx, b))
-    //for (i <- 0 until boids.length) {
-    //  newBoids = newBoids :+ torusPlane(
-    //    ctx, boids(i).step(elapsed, left ++ boids)
-    //  )
-    //  if (i < boids.length - 1) {
-    //    left = left :+ boids(i)
-    //    right = right.tail
-    //  }
-    //}
-    //boids = newBoids
+
+    boids = oneVsRest(List(), boids.toList)
+      .map((t: (Boid, Iterable[Boid])) => t._1.step(elapsed, t._2))
+      .map((b: Boid) => torusPlane(ctx, b))
+    //boids = boids
+    //  .map(b => b.step(elapsed, boids.diff(IndexedSeq(b))))
+    //  .map(b => torusPlane(ctx, b))
 
     prevTime = time
-    if (time < 20000)
-      window.setTimeout(() => window.requestAnimationFrame(loop), 1)
+    if (time - startTime < runUntil) {
+      frameCnt += 1
+      window.requestAnimationFrame(loop)
+    }
+    else {
+      reportPerf(time) 
+    }
 
+  }
+
+  def reportPerf(timestamp: Double):Unit = {
+    println(s"fps: ${1000*frameCnt.toDouble/timestamp}" + 
+      s"| runtime: $timestamp" + 
+      s"| frameCnt: $frameCnt" +
+      s"| Params(numBoids: $numBoids)")
   }
 
   def torusPlane(ctx: CanvasRenderingContext2D, b: Boid): Boid = {

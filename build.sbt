@@ -7,11 +7,7 @@ libraryDependencies ++= Seq(
 )
 name := "Boids"
 
-// This is an application with a main method
 scalaJSUseMainModuleInitializer := true
 
 skip in packageJSDependencies := false
-//persistLauncher := true
-//jsDependencies +=
-//  "org.webjars" % "jquery" % "2.2.1" / "jquery.js" minified "jquery.min.js"
-jsDependencies += "org.webjars" % "d3js" % "3.5.17" / "3.5.17/d3.min.js"
+

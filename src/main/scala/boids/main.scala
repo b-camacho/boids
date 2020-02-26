@@ -10,23 +10,42 @@ import scala.util.Random
 object Main {
   def main(argv: Array[String]) {
     document.addEventListener("DOMContentLoaded", (e: Event) => {
-      draw()
+      //draw()
+      bench(10 :: 50 :: 100 :: 300 :: 600 :: 1000 :: Nil)
     })
   }
-
-  def getCtx(): CanvasRenderingContext2D = {
-    val canvas =
-      document.querySelector("canvas#main").asInstanceOf[HTMLCanvasElement]
-    canvas.setAttribute("width", "500")//canvas.offsetWidth.toString())
-    canvas.setAttribute("height", "500")//canvas.offsetHeight.toString())
+  def makeCanvas(): CanvasRenderingContext2D = {
+    val canvas = document.createElement("canvas").asInstanceOf[HTMLCanvasElement]
+    canvas.setAttribute("width", "1000")
+    canvas.setAttribute("height", "1000")
+    canvas.setAttribute("id", "main")
+    document.body.appendChild(canvas)
     canvas.getContext("2d").asInstanceOf[CanvasRenderingContext2D]
+  }
+  def destroyCanvasIfExists(): Unit = {
+    val canvas = document.querySelector("canvas")
+    canvas.parentNode.removeChild(canvas)
   }
 
   def draw() {
-    val ctx = getCtx()
-    val anim = new Animation(ctx)
-    anim.setup()
+    val ctx = makeCanvas()
+    val anim = new Animation(ctx, 2000, 100)
+    anim.setup(window.performance.now())
     window.requestAnimationFrame(anim.loop)
+  }
+  def bench(paramList: List[Int]): Unit = {
+    paramList match {
+      case Nil => Unit
+      case p :: ps => {
+        val anim = new Animation(makeCanvas(), 2000, p)
+        anim.setup(window.performance.now())
+        window.requestAnimationFrame(anim.loop)
+        window.setTimeout(() => {
+          destroyCanvasIfExists()
+          bench(ps)
+        }, 2200)
+      }
+   }
   }
 
   def testBoidSpin(ctx: CanvasRenderingContext2D) {
@@ -102,31 +121,23 @@ class Boid(val size: Double, val id: Int) {
     ctx.stroke()
   }
   
-  def step(elapsed: Double, others: IndexedSeq[Boid]): Boid = {
+  def step(elapsed: Double, others: Iterable[Boid]): Boid = {
     val nb = Boid(size)
-    println(others.length)
-    val gr = others.groupBy((o: Boid) => {
+    var cAvoid = Vec2(.0, .0)
+    var vMatch = Vec2(.0, .0)
+    val gr = others.foreach((o: Boid) => {
       val d = p.dist(o.p)
-      println(s"$id<-${d}->${o.id}")
-      if (d < Boid.THR_CAVOID) 0
-      else if (d < Boid.THR_VMATCH) 1
-      else 2
+      if (d < Boid.THR_CAVOID) {
+        cAvoid = cAvoid + p.diff(o.p) / (d*d)
+      }
+      else if (d < Boid.THR_VMATCH) {
+        vMatch = vMatch + o.v / d
+      }
     })
-    val cAvoid = gr.get(0) match {
-      case Some(arr) => arr.map((b: Boid) =>
-          p.diff(b.p)/(Math.pow(p.dist(b.p), 2)))
-      case None => Nil 
-    }
-    val vMatch = gr.get(1) match {
-      case Some(arr) => arr.map((b: Boid) => b.v / p.dist(b.p)) 
-      case None => Nil
-    }
+    
     nb.p = p + v * elapsed
-    println(cAvoid)
-    println(s"cavoid diffs ${cAvoid.foldLeft(Vec2(.0, .0))(_ + _)}" + 
-      s" vmatch diffs ${vMatch.fold(Vec2(.0, .0))(_ + _)}") 
-    nb.v = (cAvoid.foldLeft(Vec2(.0, .0))(_ + _) * Boid.MULT_CAVOID +
-      vMatch.fold(Vec2(.0, .0))(_ + _) * Boid.MULT_VMATCH) * elapsed + 
+    nb.v = (cAvoid * Boid.MULT_CAVOID +
+      vMatch * Boid.MULT_VMATCH) * elapsed + 
       v
     nb.v = (nb.v / nb.v.mod) * 0.1
     nb
