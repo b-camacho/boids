@@ -10,8 +10,8 @@ import scala.util.Random
 object Main {
   def main(argv: Array[String]) {
     document.addEventListener("DOMContentLoaded", (e: Event) => {
-      //draw()
-      bench(10 :: 50 :: 100 :: 300 :: 600 :: 1000 :: Nil)
+      draw()
+      //bench(10 :: 50 :: 100 :: 300 :: 600 :: 1000 :: Nil)
     })
   }
   def makeCanvas(): CanvasRenderingContext2D = {
@@ -29,7 +29,7 @@ object Main {
 
   def draw() {
     val ctx = makeCanvas()
-    val anim = new Animation(ctx, 2000, 100)
+    val anim = new Animation(ctx, 20000, 300)
     anim.setup(window.performance.now())
     window.requestAnimationFrame(anim.loop)
   }
@@ -89,10 +89,13 @@ object Boid {
       b.v = vel
       b
   }
-  val MULT_CAVOID = 0.002
-  val MULT_VMATCH = 0.03
-  val THR_CAVOID = 100.0
+  val MULT_CAVOID = 0.01
+  val MULT_VMATCH = .008
+  val MULT_LCOHES = .00001
+  val THR_CAVOID = 5.0
   val THR_VMATCH = 150.0
+  val THR_LCOHES = 150.0
+  val SPEED = 0.15
 }
 class Boid(val size: Double, val id: Int) {
   var p, v = Vec2(.0, .0)
@@ -125,21 +128,30 @@ class Boid(val size: Double, val id: Int) {
     val nb = Boid(size)
     var cAvoid = Vec2(.0, .0)
     var vMatch = Vec2(.0, .0)
+    var lCohes = Vec2(.0, .0)
+    var cohesCnt = 0
     val gr = others.foreach((o: Boid) => {
       val d = p.dist(o.p)
-      if (d < Boid.THR_CAVOID) {
+      if (d < Boid.THR_CAVOID * size) {
         cAvoid = cAvoid + p.diff(o.p) / (d*d)
       }
-      else if (d < Boid.THR_VMATCH) {
+      if (d < Boid.THR_VMATCH) {
         vMatch = vMatch + o.v / d
       }
+      if (d < Boid.THR_LCOHES) {
+        lCohes = lCohes + o.p
+        cohesCnt += 1
+      }
     })
-    
+    lCohes = if(cohesCnt > 0) (lCohes / cohesCnt) - p else Vec2(.0, .0)
+
     nb.p = p + v * elapsed
-    nb.v = (cAvoid * Boid.MULT_CAVOID +
-      vMatch * Boid.MULT_VMATCH) * elapsed + 
+    nb.v = (
+      cAvoid * Boid.MULT_CAVOID +
+      vMatch * Boid.MULT_VMATCH + 
+      lCohes * Boid.MULT_LCOHES) * elapsed + 
       v
-    nb.v = (nb.v / nb.v.mod) * 0.1
+    nb.v = (nb.v / nb.v.mod) * Boid.SPEED
     nb
   }
 

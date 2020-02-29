@@ -15,7 +15,7 @@ class Animation(ctx: CanvasRenderingContext2D,
   def setup(time: Double) = {
     boids = (1 to numBoids)
       .map(i => {
-        val b = Boid(20)
+        val b = Boid(12)
         b.p = Vec2(
           Random.nextDouble() * ctx.canvas.height,
           Random.nextDouble() * ctx.canvas.width,
