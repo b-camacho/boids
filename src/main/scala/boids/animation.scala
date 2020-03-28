@@ -40,6 +40,9 @@ class Animation(ctx: CanvasRenderingContext2D,
     //println(boids.map(b => (b.p, b.v)))
     val elapsed = time - prevTime
     ctx.canvas.width = ctx.canvas.width
+    
+    ctx.fillStyle = "#212121"
+    ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height)
     for (b <- boids) {
       b.render(ctx)
     }

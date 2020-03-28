@@ -7,9 +7,13 @@ import org.scalajs.dom.window
 import org.scalajs.dom.raw._
 import scala.scalajs.js.annotation.JSExportTopLevel
 import scala.util.Random
+
+import UI._
+
 object Main {
   def main(argv: Array[String]) {
     document.addEventListener("DOMContentLoaded", (e: Event) => {
+      UI.init()
       draw()
       //bench(10 :: 50 :: 100 :: 300 :: 600 :: 1000 :: Nil)
     })
@@ -48,18 +52,6 @@ object Main {
    }
   }
 
-  def testBoidSpin(ctx: CanvasRenderingContext2D) {
-    val b = Boid(20.0)
-    b.p = Vec2(10.0, 10.0)
-    b.v.x = 1.0
-    b.v.y = 1.0
-    b.render(ctx)
-    //for ( i <- 0.to(100) ) {
-    //  b.v.y = (-1) + (2.0 / 100.0) * i.toDouble
-    //  b.render(ctx)
-    //}
-  }
-
 }
 object Vec2 {
   def apply(x: Double, y: Double) = new Vec2(x, y)
@@ -89,13 +81,16 @@ object Boid {
       b.v = vel
       b
   }
-  val MULT_CAVOID = 0.01
-  val MULT_VMATCH = .008
-  val MULT_LCOHES = .00001
-  val THR_CAVOID = 5.0
-  val THR_VMATCH = 150.0
-  val THR_LCOHES = 150.0
+  def MULT_CAVOID = UI.multCAvoid.get
+  val MULT_VMATCH = UI.multVMatch.get
+  val MULT_LCOHES = UI.multLCohes.get
+  val THR_CAVOID = UI.thrCAvoid.get
+  val THR_VMATCH = UI.thrVMatch.get
+  val THR_LCOHES = UI.thrLCohes.get
   val SPEED = 0.15
+
+  val COLOR = "#97b3f4"
+
 }
 class Boid(val size: Double, val id: Int) {
   var p, v = Vec2(.0, .0)
@@ -121,6 +116,7 @@ class Boid(val size: Double, val id: Int) {
     ctx.moveTo(size / 2.0, 0)
     ctx.lineTo(size / 2.0, (size * Math.sqrt(3.0) / 2.0))
     ctx.closePath()
+    ctx.strokeStyle = Boid.COLOR
     ctx.stroke()
   }
   

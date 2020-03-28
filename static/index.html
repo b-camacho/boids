@@ -7,5 +7,17 @@
 </head>
 <body>
 <script type="text/javascript" src="../target/scala-2.12/boids-fastopt.js"></script>
+<div id="opts">
+	<ul>
+        <li>Multipliers</li>
+        <li>Collision Avoidance: <input step="any" type="number" id="mult-cavoid"></li>
+        <li>Velocity Matching: <input step="any" type="number" id="mult-vmatch"></li>
+        <li>Local Cohesion: <input step="any" type="number" id="mult-lcohes"></li>
+        <li>Thresholds</li>
+        <li>Collision Avoidance: <input type="number" id="thr-cavoid"></li>
+        <li>Velocity Matching: <input type="number" id="thr-vmatch"></li>
+        <li>Local Cohesion: <input type="number" id="thr-lcohes"></li>
+    </ul>
+</div>
 </body>
 </html>
