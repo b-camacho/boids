@@ -7,12 +7,13 @@ html, body {
     font-family: Noto Sans;
 }
 canvas#main {
-    width: 1000px;
-    height: 1000px;
+    width: 100%;
+    height: 100%;
 }
 
 ul {
-  list-style: none
+  list-style: none;
+  padding-left: 1em;
 }
 
 div#opts {
@@ -31,17 +32,23 @@ div#opts li {
     height: 1.5em;
     
 }
+div#opts li.value {
+    padding-left: 1em;
+}
 
 div#opts li input {
     float: right;
     height: 0.8em;
     width: 6em;
     margin-left: 1em;
+    margin-right: 1em;
+    padding: 0.2em;
 
     background-color: rgba(0, 0, 0, 0.1);
     color: #FFFFFF;
     outline: none;
-    border: 0;
+    
+    border: solid 1px #AAAAAA;
 }
 
 

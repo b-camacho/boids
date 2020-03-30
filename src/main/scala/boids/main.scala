@@ -20,8 +20,8 @@ object Main {
   }
   def makeCanvas(): CanvasRenderingContext2D = {
     val canvas = document.createElement("canvas").asInstanceOf[HTMLCanvasElement]
-    canvas.setAttribute("width", "1000")
-    canvas.setAttribute("height", "1000")
+    canvas.setAttribute("width", window.innerWidth.toString())
+    canvas.setAttribute("height", window.innerHeight.toString())
     canvas.setAttribute("id", "main")
     document.body.appendChild(canvas)
     canvas.getContext("2d").asInstanceOf[CanvasRenderingContext2D]
@@ -30,12 +30,17 @@ object Main {
     val canvas = document.querySelector("canvas")
     canvas.parentNode.removeChild(canvas)
   }
+  def resizeCanvas(ctx: CanvasRenderingContext2D)(e: Event) = {
+    ctx.canvas.width = window.innerWidth.toInt
+    ctx.canvas.height = window.innerHeight.toInt
+  }
 
   def draw() {
     val ctx = makeCanvas()
-    val anim = new Animation(ctx, 20000, 300)
+    val anim = new Animation(ctx, 0, 300)
     anim.setup(window.performance.now())
     window.requestAnimationFrame(anim.loop)
+    window.addEventListener("resize", resizeCanvas(ctx))
   }
   def bench(paramList: List[Int]): Unit = {
     paramList match {
@@ -56,6 +61,8 @@ object Main {
 object Vec2 {
   def apply(x: Double, y: Double) = new Vec2(x, y)
 }
+// Vec2 defines common operations on a 2d vector
+// Boid speed and position are expressed as Vec2
 class Vec2(var x: Double, var y: Double) {
   override def toString(): String = s"$x, $y"
   def rot: Double = Math.atan2(x, y)

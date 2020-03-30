@@ -39,7 +39,6 @@ class Animation(ctx: CanvasRenderingContext2D,
   def loop(time: Double): Unit = {
     //println(boids.map(b => (b.p, b.v)))
     val elapsed = time - prevTime
-    ctx.canvas.width = ctx.canvas.width
     
     ctx.fillStyle = "#212121"
     ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height)
@@ -55,7 +54,7 @@ class Animation(ctx: CanvasRenderingContext2D,
     //  .map(b => torusPlane(ctx, b))
 
     prevTime = time
-    if (time - startTime < runUntil) {
+    if (runUntil == 0 || time - startTime < runUntil) {
       frameCnt += 1
       window.requestAnimationFrame(loop)
     }
