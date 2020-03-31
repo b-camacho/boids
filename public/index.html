@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Boids</title>
+    <link rel="stylesheet" href="main.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+<script type="text/javascript" src="boids-opt.js"></script>
+<div id="opts">
+	<ul>
+        <li>Multipliers</li>
+        <li class="value">Collision Avoidance: <input step="any" type="number" id="mult-cavoid"></li>
+        <li class="value">Velocity Matching: <input step="any" type="number" id="mult-vmatch"></li>
+        <li class="value">Local Cohesion: <input step="any" type="number" id="mult-lcohes"></li>
+        <li>Thresholds</li>
+        <li class="value">Collision Avoidance: <input type="number" id="thr-cavoid"></li>
+        <li class="value">Velocity Matching: <input type="number" id="thr-vmatch"></li>
+        <li class="value">Local Cohesion: <input type="number" id="thr-lcohes"></li>
+    </ul>
+</div>
+</body>
+</html>
