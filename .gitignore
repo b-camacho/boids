@@ -4,4 +4,6 @@ project/target
 .idea
 .metals
 .bloop
+node_modules
+
 
