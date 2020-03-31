@@ -13,12 +13,12 @@ canvas#main {
 
 ul {
   list-style: none;
-  padding-left: 1em;
+  padding-left: 1rem;
 }
 
 div#opts {
     position: absolute;
-    top: 10px;
+    bottom: 2rem;
     left: 0;
     
     color: white;
@@ -29,20 +29,20 @@ div#opts li {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    height: 1.5em;
+    height: 1.5rem;
     
 }
 div#opts li.value {
-    padding-left: 1em;
+    padding-left: 1rem;
 }
 
 div#opts li input {
     float: right;
-    height: 0.8em;
-    width: 6em;
-    margin-left: 1em;
-    margin-right: 1em;
-    padding: 0.2em;
+    height: 0.8rem;
+    width: 6rem;
+    margin-left: 1rem;
+    margin-right: 1rem;
+    padding: 0.2rem;
 
     background-color: rgba(0, 0, 0, 0.1);
     color: #FFFFFF;
