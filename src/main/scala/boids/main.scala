@@ -89,11 +89,11 @@ object Boid {
       b
   }
   def MULT_CAVOID = UI.multCAvoid.get
-  val MULT_VMATCH = UI.multVMatch.get
-  val MULT_LCOHES = UI.multLCohes.get
-  val THR_CAVOID = UI.thrCAvoid.get
-  val THR_VMATCH = UI.thrVMatch.get
-  val THR_LCOHES = UI.thrLCohes.get
+  def MULT_VMATCH = UI.multVMatch.get
+  def MULT_LCOHES = UI.multLCohes.get
+  def THR_CAVOID = UI.thrCAvoid.get
+  def THR_VMATCH = UI.thrVMatch.get
+  def THR_LCOHES = UI.thrLCohes.get
   val SPEED = 0.15
 
   val COLOR = "#97b3f4"
